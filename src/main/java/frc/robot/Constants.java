@@ -177,15 +177,28 @@ public final class Constants {
   }
 
   public static final class LauncherConstants {
+    // Motores del launcher
       public static final int LEADER_LAUNCHER_MOTOR_ID = 6;
       public static final int FOLLOWER_LAUNCHER_MOTOR = 5;
 
+    // Motores del indexer
+      public static final int INDEXER_MOTOR_ID = 7;
+
       public static final boolean kLeaderInverted = false;
-      public static final boolean KFollowerInverted= true;
+      public static final boolean KFollowerInverted= false;
+      public static final boolean kIndexerInverted = false;
 
       public static final int kCurrentLimit = 60;
+      public static final int kIndexerCurrentLimit = 40;
 
       public static final IdleMode K_IDLE_MODE= IdleMode.kCoast;
+      
+      public static final double kIdleShooterRPM = 1500.0;
+      public static final double kShootTriggerDeadband = 0.10;
+      
+      public static final double kIndexerFeedPercent = 0.35;
+
+      public static final boolean kOnlyFeedWhenAtSpeed = true;
       
       public static final int kPIDSlot = 0;
 
@@ -215,5 +228,6 @@ public final class Constants {
       public static final double kClosedLoopRampRate = 0.0; 
 
       public static final ClosedLoopSlot kDefaultSlot = ClosedLoopSlot.kSlot0;
+
     }
 }

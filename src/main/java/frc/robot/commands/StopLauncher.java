@@ -5,6 +5,6 @@ import frc.robot.subsystems.Launcher.Launcher;
 
 public class StopLauncher extends InstantCommand {
   public StopLauncher(Launcher launcher) {
-    super(launcher::stop, launcher);
+    super(launcher::stopAll, launcher);
   }
 }
