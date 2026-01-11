@@ -170,5 +170,12 @@ public final class Constants {
       public static final SwerveModuleConstants constants =
           new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset, encoderOffset);
     }
+
+    public static final class LauncherConstants {
+      public static final int RIGHT_LAUNCHER_MOTOR = 6;
+      public static final int LEFT_LAUNCHER_MOTOR = 5;
+
+
+    }
   }
 }
