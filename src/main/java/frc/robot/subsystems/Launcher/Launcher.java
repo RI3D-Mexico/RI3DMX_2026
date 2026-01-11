@@ -2,6 +2,7 @@ package frc.robot.subsystems.Launcher;
 // Launcher.java
 
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.PersistMode;
@@ -26,19 +27,24 @@ public class Launcher extends SubsystemBase {
   private final SparkMax follower =
       new SparkMax(LauncherConstants.FOLLOWER_LAUNCHER_MOTOR, MotorType.kBrushless);
 
+  private final SparkMax indexer =
+      new SparkMax(LauncherConstants.INDEXER_MOTOR_ID, MotorType.kBrushless);
+
   private final RelativeEncoder encoder;
   private final SparkClosedLoopController controller;
 
   private double targetRPM = 0.0;
   private ClosedLoopSlot activeSlot = LauncherConstants.kDefaultSlot;
 
+  private double idleRPM = LauncherConstants.kIdleShooterRPM;
+  private boolean idleEnabled = false;
 
   public Launcher() {
 
     SparkMaxConfig baseConfig = new SparkMaxConfig();
     SparkMaxConfig leaderConfig = new SparkMaxConfig();
     SparkMaxConfig followerConfig = new SparkMaxConfig();
-
+    SparkMaxConfig indexerConfig = new SparkMaxConfig();
 
     baseConfig
         .idleMode(LauncherConstants.K_IDLE_MODE)
@@ -65,9 +71,15 @@ public class Launcher extends SubsystemBase {
     followerConfig
         .apply(baseConfig)
         .inverted(LauncherConstants.KFollowerInverted)
-        .follow(leader);
+        .follow(leader, true);
 
     follower.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    indexerConfig
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(LauncherConstants.kIndexerCurrentLimit)
+        .inverted(LauncherConstants.kIndexerInverted);
+    indexer.configure(indexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
 
     encoder = leader.getEncoder();
@@ -81,13 +93,51 @@ public class Launcher extends SubsystemBase {
     controller.setSetpoint(rpm, ControlType.kVelocity, slot);
   }
 
-   public void setRPM(double rpm) {
+  public void setRPM(double rpm) {
     setRPM(rpm, LauncherConstants.kDefaultSlot);
   }
 
-  public void stop() {
+  public void stopShooter() {
     targetRPM = 0.0;
-    leader.stopMotor(); 
+    if (idleEnabled && idleRPM > 0.0) {
+      setRPM(idleRPM, LauncherConstants.kDefaultSlot);
+    } else {
+      leader.stopMotor();
+    }
+  }
+
+  public void stopAll() {
+    stopIndexer();
+    stopShooter();
+  }
+
+  public void stop() {
+    stopAll();
+  }
+
+  public void setIdleRPM(double rpm) {
+    idleRPM = rpm;
+    if (idleEnabled && targetRPM <= 0.0) {
+      setRPM(idleRPM, LauncherConstants.kDefaultSlot);
+    }
+  }
+
+  public void enableIdle(boolean enable) {
+    idleEnabled = enable;
+    if (idleEnabled && targetRPM <= 0.0 && idleRPM > 0.0) {
+      setRPM(idleRPM, LauncherConstants.kDefaultSlot);
+    }
+    if (!idleEnabled && targetRPM <= 0.0) {
+      leader.stopMotor();
+    }
+  }
+
+  public void runIndexer(double percent) {
+    indexer.set(percent);
+  }
+
+  public void stopIndexer() {
+    indexer.stopMotor();
   }
 
   public double getRPM() {
@@ -109,6 +159,9 @@ public class Launcher extends SubsystemBase {
     SmartDashboard.putNumber("Launcher/ActualRPM", getRPM());
     SmartDashboard.putBoolean("Launcher/AtSpeed", atSpeed());
     SmartDashboard.putString("Launcher/Slot", activeSlot.toString());
+
+    SmartDashboard.putBoolean("Launcher/IdleEnabled", idleEnabled);
+    SmartDashboard.putNumber("Launcher/IdleRPM", idleRPM);
   }
 
 }
