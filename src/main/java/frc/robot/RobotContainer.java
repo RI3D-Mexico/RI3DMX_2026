@@ -3,25 +3,23 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
-import frc.robot.commands.newDriveTrainCommand;
-import frc.robot.subsystems.Drivetrain.newDriveTrain;
+import frc.robot.commands.DriveTrainCommand;
+import frc.robot.subsystems.Drivetrain.DriveTrain;
 import edu.wpi.first.wpilibj.XboxController;
 
 
 public class RobotContainer {
 
   private final XboxController driverController = new XboxController(Constants.OperatorConstants.driverDriveTrainPort);
-  private final newDriveTrain m_NewDriveTrain = new newDriveTrain();
+  private final DriveTrain m_NewDriveTrain = new DriveTrain();
 
   public RobotContainer() {
     
-    m_NewDriveTrain.setDefaultCommand(new newDriveTrainCommand(m_NewDriveTrain, 
-                                                               ()-> -driverController.getLeftX(), 
-                                                               ()-> driverController.getLeftY(),
+    m_NewDriveTrain.setDefaultCommand(new DriveTrainCommand(m_NewDriveTrain, 
+                                                               ()-> -driverController.getLeftY(), 
+                                                               ()-> -driverController.getLeftX(),
                                                                ()-> -driverController.getRightX(),
                                                                ()-> driverController.getBButtonPressed(),
-                                                               ()-> driverController.getYButtonPressed(),
-                                                               ()-> driverController.getRightTriggerAxis(),
-                                                               ()-> driverController.getLeftTriggerAxis()));
+                                                               ()-> driverController.getYButtonPressed()));
   }
 }

@@ -26,7 +26,7 @@ import frc.lib.config.SwerveModuleConstants;
 import frc.lib.math.ModuleOptimizer;
 import frc.robot.Constants;
 
-public class newSwerveModule extends SubsystemBase {
+public class SwerveModule extends SubsystemBase {
     
     public int moduleID;
 
@@ -44,11 +44,13 @@ public class newSwerveModule extends SubsystemBase {
     private final SparkClosedLoopController steerController;
     private final SparkClosedLoopController driveController;
 
+    private SwerveModuleState targetState = new SwerveModuleState();
+
     private final SimpleMotorFeedforward feedforward =  new SimpleMotorFeedforward(Constants.Swerve.driveKS, 
                                                                                    Constants.Swerve.driveKV, 
                                                                                    Constants.Swerve.driveKA);    
     
-    public newSwerveModule(int moduleID, SwerveModuleConstants moduleConstants){
+    public SwerveModule(int moduleID, SwerveModuleConstants moduleConstants){
         
         this.moduleID = moduleID;
         angleOffset = moduleConstants.angleOffset;
@@ -74,11 +76,16 @@ public class newSwerveModule extends SubsystemBase {
     public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop) {
 
         desiredState = ModuleOptimizer.optimize(desiredState, getState().angle);
+
+        this.targetState = desiredState;
     
         setAngle(desiredState);
         setSpeed(desiredState, isOpenLoop);
     }
 
+    public SwerveModuleState getTargetState() {
+        return targetState;
+    }
     private void resetToAbsolute() {
 
         double absolutePosition = getCANCoderAngle().getDegrees() - angleOffset.getDegrees();
@@ -97,7 +104,8 @@ public class newSwerveModule extends SubsystemBase {
         steerMotorEncoderConfig.positionConversionFactor(Constants.Swerve.angleConversionFactor);
         
         steerMotorCLConfig.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                          .p(0.02).i(0.0).d(0.0);
+                          .p(0.08).i(0.0).d(0.0)
+                          .positionWrappingEnabled(true);
 
         steerMotorConfig.idleMode(IdleMode.kBrake)
                         .inverted(Constants.Swerve.angleInvert)
@@ -119,10 +127,9 @@ public class newSwerveModule extends SubsystemBase {
 
         driveMotorEncoderConfig.positionConversionFactor(Constants.Swerve.driveConversionPositionFactor);
 
-        driveMotorCLConfig.feedbackSensor(com.revrobotics.spark.FeedbackSensor.kPrimaryEncoder);
-
         driveMotorCLConfig.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                          .p(0.2).i(0.0).d(0.0);
+                          .p(0.2).i(0.0).d(0.0)
+                          .positionWrappingEnabled(true);
         
         driveMotorConfig.idleMode(IdleMode.kBrake)
                         .inverted(Constants.Swerve.angleInvert)
@@ -162,7 +169,7 @@ public class newSwerveModule extends SubsystemBase {
         else {
 
             driveController.setSetpoint(feedforward.calculate(desiredState.speedMetersPerSecond), 
-                                         ControlType.kPosition, 
+                                         ControlType.kVelocity, 
                                          ClosedLoopSlot.kSlot0);
               
         }
@@ -181,7 +188,7 @@ public class newSwerveModule extends SubsystemBase {
 
     public double getDrivePosition(){
 
-        return driveMotor.getEncoder().getPosition() * Constants.Swerve.driveConversionPositionFactor;
+        return driveMotor.getEncoder().getPosition();
 
     }
 
@@ -203,13 +210,13 @@ public class newSwerveModule extends SubsystemBase {
 
     public SwerveModulePosition getPosition() {
 
-        return new SwerveModulePosition(driveMotor.getEncoder().getPosition() * Constants.Swerve.driveConversionPositionFactor, getSteerAngle());
+        return new SwerveModulePosition(driveMotor.getEncoder().getPosition(), getSteerAngle());
 
     }
 
     public SwerveModuleState getState() {
 
-        return new SwerveModuleState(driveMotor.getEncoder().getVelocity() * Constants.Swerve.driveConversionVelocityFactor, getSteerAngle());
+        return new SwerveModuleState(driveMotor.getEncoder().getVelocity(), getSteerAngle());
 
     }
 

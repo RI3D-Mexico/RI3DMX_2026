@@ -1,43 +1,52 @@
 package frc.robot.subsystems.Drivetrain;
 
 import com.ctre.phoenix6.configs.MountPoseConfigs;
-import com.studica.frc.AHRS;
+import com.ctre.phoenix6.configs.Pigeon2Configuration;
+import com.ctre.phoenix6.hardware.Pigeon2;
 
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class newDriveTrain extends SubsystemBase{
+public class DriveTrain extends SubsystemBase{
 
-    private AHRS navx = new AHRS(AHRS.NavXComType.kMXP_SPI);
+    private Pigeon2 gyro;
 
-    private newSwerveModule[] swerveModules;
+
+    private SwerveModule[] swerveModules;
     private SwerveModulePosition[] swervePositions;
 
     private Field2d field;
     private SwerveDriveOdometry swerveOdometry;
     private SwerveDrivePoseEstimator swervePoseEstimator;
-    // private NetworkTable limef;
-    // private NetworkTable limeb;
     
+    private final StructArrayPublisher<SwerveModuleState> publisherActualStates = NetworkTableInstance.getDefault()
+            .getStructArrayTopic("Swerve/ActualStates", SwerveModuleState.struct).publish();
 
+    private final StructArrayPublisher<SwerveModuleState> publisherTargetStates = NetworkTableInstance.getDefault()
+            .getStructArrayTopic("Swerve/TargetStates", SwerveModuleState.struct).publish();
 
-    public newDriveTrain(){
+    private final StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
+            .getStructTopic("Swerve/Pose", Pose2d.struct).publish();
 
-        navx.reset();
-        zeroNavX();
-        navx.setAngleAdjustment(90);
+    public DriveTrain(){
+        gyro = new Pigeon2(0);
+
+        
 
         field = new Field2d();
         SmartDashboard.putData("Field: ", field);
@@ -45,11 +54,11 @@ public class newDriveTrain extends SubsystemBase{
         
         
         swerveModules =
-            new newSwerveModule[] {
-                new newSwerveModule(0, Constants.Swerve.Mod0.constants),
-                new newSwerveModule(1, Constants.Swerve.Mod1.constants),
-                new newSwerveModule(2, Constants.Swerve.Mod2.constants),
-                new newSwerveModule(3, Constants.Swerve.Mod3.constants),
+            new SwerveModule[] {
+                new SwerveModule(0, Constants.Swerve.Mod0.constants),
+                new SwerveModule(1, Constants.Swerve.Mod1.constants),
+                new SwerveModule(2, Constants.Swerve.Mod2.constants),
+                new SwerveModule(3, Constants.Swerve.Mod3.constants),
             };
 
         swervePositions = 
@@ -73,8 +82,18 @@ public class newDriveTrain extends SubsystemBase{
                                                            swervePositions, 
                                                            getPose());
         field.setRobotPose(getPose());
-        // limef = NetworkTableInstance.getDefault().getTable(Constants.Sensors.limef);
-        // limeb = NetworkTableInstance.getDefault().getTable(Constants.Sensors.limeb);  
+
+        configureGyro();
+    }
+
+    public void configureGyro(){
+
+        var pigeonConfig = new Pigeon2Configuration();
+
+        pigeonConfig.withMountPose(new MountPoseConfigs().withMountPoseYaw(90.0));
+        zeroGyro();
+        
+
     }
 
     public void drive(Translation2d translation, double rotation, boolean isFieldDrive, boolean isOpenloop){
@@ -83,14 +102,14 @@ public class newDriveTrain extends SubsystemBase{
             Constants.Swerve.swerveOdoKinematics.toSwerveModuleStates(isFieldDrive ? ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), 
                                                                                                                         translation.getY(),
                                                                                                                         rotation, 
-                                                                                                                        getOdoYaw())
+                                                                                                                        getYaw())
                                                                                     : new ChassisSpeeds(-translation.getY(),
                                                                                                         translation.getX(),
                                                                                                         rotation));
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
 
-        for(newSwerveModule module : swerveModules){
+        for(SwerveModule module : swerveModules){
 
             module.setDesiredState(swerveModuleStates[module.moduleID], isOpenloop);
 
@@ -102,7 +121,7 @@ public class newDriveTrain extends SubsystemBase{
 
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
     
-        for (newSwerveModule module : swerveModules) {
+        for (SwerveModule module : swerveModules) {
 
           module.setDesiredState(desiredStates[module.moduleID], false);
 
@@ -112,8 +131,8 @@ public class newDriveTrain extends SubsystemBase{
 
       public Rotation2d getYaw() {
 
-        double angle = (Constants.Swerve.invNavX) ? 360 - navx.getAngle() //NavX is flipped
-                                                  : navx.getAngle();
+        double angle = (Constants.Swerve.invNavX) ? 360 - gyro.getYaw().getValueAsDouble() //gyro is flipped
+                                                  : gyro.getYaw().getValueAsDouble();
 
         return Rotation2d.fromDegrees(angle);
 
@@ -121,23 +140,38 @@ public class newDriveTrain extends SubsystemBase{
 
     public Rotation2d getOdoYaw() {
 
-        double angle = (!Constants.Swerve.invNavX) ? 360 - navx.getAngle() //NavX is flipped
-                                                   : navx.getAngle();
+        double angle = (!Constants.Swerve.invNavX) ? 360 - gyro.getYaw().getValueAsDouble() //gyro is flipped
+                                                   : gyro.getYaw().getValueAsDouble();
         return Rotation2d.fromDegrees(angle);
 
     }
 
-    public void zeroNavX() {
+    public void zeroGyro() {
+    gyro.setYaw(0.0);
+    
+    Pose2d currentPose = swervePoseEstimator.getEstimatedPosition();
 
-        System.out.println("NavX zeroed correctly");
-        navx.zeroYaw();
+    Pose2d newPose = new Pose2d(currentPose.getTranslation(), new Rotation2d(0.0));
+    
+    swervePoseEstimator.resetPosition(getOdoYaw(), getPositions(), newPose);
+    swerveOdometry.resetPosition(getOdoYaw(), getPositions(), newPose);
+    
+    System.out.println("Gyro and Pose Zeroed!");
+}
 
+    public SwerveModuleState[] getTargetStates() {
+        return new SwerveModuleState[] {
+            swerveModules[0].getTargetState(), // You might need to add this method to your Module class
+            swerveModules[1].getTargetState(),
+            swerveModules[2].getTargetState(),
+            swerveModules[3].getTargetState()
+        };
     }
 
     public SwerveModuleState[] getStates() {
         SwerveModuleState[] states = new SwerveModuleState[4];
 
-        for (newSwerveModule module : swerveModules) {
+        for (SwerveModule module : swerveModules) {
 
           states[module.moduleID] = module.getState();
 
@@ -149,7 +183,7 @@ public class newDriveTrain extends SubsystemBase{
     public SwerveModulePosition[] getPositions() {
         SwerveModulePosition[] positions = new SwerveModulePosition[4];
 
-        for (newSwerveModule module : swerveModules) {
+        for (SwerveModule module : swerveModules) {
 
           positions[module.moduleID] = module.getPosition();
 
@@ -204,6 +238,37 @@ public class newDriveTrain extends SubsystemBase{
     }
 
     @Override
+public void simulationPeriodic() {
+    
+    ChassisSpeeds speeds = Constants.Swerve.swerveOdoKinematics.toChassisSpeeds(getTargetStates());
+
+    
+    double changeInYawDegrees = Math.toDegrees(speeds.omegaRadiansPerSecond * 0.01);
+    
+    // Update the simulated Pigeon2 so your field-centric drive works
+    gyro.getSimState().addYaw(changeInYawDegrees);
+
+    Pose2d currentPose = swervePoseEstimator.getEstimatedPosition();
+    
+    // Apply the movement (Twist) to the current pose
+    Pose2d newPose = currentPose.exp(
+        new Twist2d(
+            speeds.vxMetersPerSecond * 0.02, 
+            speeds.vyMetersPerSecond * 0.02, 
+            speeds.omegaRadiansPerSecond * 0.02
+        )
+    );
+
+    // Force the pose estimator to this new calculated position
+    // (We use resetPosition because the real encoders are still reading 0)
+    swervePoseEstimator.resetPosition(
+        getOdoYaw(), 
+        getPositions(), // These are still 0, but it doesn't matter because we overwrite the pose below
+        newPose
+    );
+}
+
+    @Override
     public void periodic() {
         //swerveOdometry.update(getOdoYaw(), getPositions());
         //swervePoseEstimator.update(getOdoYaw(), getPositions());
@@ -213,8 +278,8 @@ public class newDriveTrain extends SubsystemBase{
         
         
         SmartDashboard.putString("Odometry: ", swerveOdometry.getPoseMeters().getTranslation().toString());
-        SmartDashboard.putNumber("NavX", getYaw().getDegrees());
-        SmartDashboard.putNumber("NavX Odo", getOdoYaw().getDegrees());
+        SmartDashboard.putNumber("gyro", getYaw().getDegrees());
+        SmartDashboard.putNumber("gyro Odo", getOdoYaw().getDegrees());
 
         // if(limeb.getEntry("tv").getDouble(0) == 1){
 
@@ -228,13 +293,14 @@ public class newDriveTrain extends SubsystemBase{
         updateOdometry();
         field.setRobotPose(swervePoseEstimator.getEstimatedPosition());
 
-
+        /* 
         double loggingModulesStates [] = {
             swerveModules[0].getState().angle.getDegrees(), swerveModules[0].getState().speedMetersPerSecond * 50,
             swerveModules[1].getState().angle.getDegrees(), swerveModules[1].getState().speedMetersPerSecond * 50,
             swerveModules[2].getState().angle.getDegrees(), swerveModules[2].getState().speedMetersPerSecond * 50,
             swerveModules[3].getState().angle.getDegrees(), swerveModules[3].getState().speedMetersPerSecond * 50   
         };
+
 
         SmartDashboard.putNumber("Angle FL: ", swerveModules[0].getState().angle.getDegrees());
         SmartDashboard.putNumber("Angle FR: ", swerveModules[1].getState().angle.getDegrees());
@@ -246,9 +312,11 @@ public class newDriveTrain extends SubsystemBase{
         SmartDashboard.putNumber("Angle ERL: ", swerveModules[2].getCANCoderAngle().getDegrees());
         SmartDashboard.putNumber("Angle ERR: ", swerveModules[3].getCANCoderAngle().getDegrees());
 
+            SmartDashboard.putNumberArray("SwerveModuleStates", loggingModulesStates);*/
 
-
-        SmartDashboard.putNumberArray("SwerveModuleStates", loggingModulesStates);
+        publisherActualStates.set(getStates());       // The states measured by encoders
+        publisherTargetStates.set(getTargetStates()); // The states calculated by logic
+        posePublisher.set(swervePoseEstimator.getEstimatedPosition());
 
     }
     
