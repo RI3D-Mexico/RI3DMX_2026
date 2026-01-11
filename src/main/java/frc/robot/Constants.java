@@ -5,6 +5,7 @@
 package frc.robot;
 
 
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -31,6 +32,7 @@ public final class Constants {
 
   }
 
+  
 
   public static final class Swerve {
 
@@ -171,11 +173,47 @@ public final class Constants {
           new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset, encoderOffset);
     }
 
-    public static final class LauncherConstants {
-      public static final int RIGHT_LAUNCHER_MOTOR = 6;
-      public static final int LEFT_LAUNCHER_MOTOR = 5;
-
-
-    }
+    
   }
+
+  public static final class LauncherConstants {
+      public static final int LEADER_LAUNCHER_MOTOR_ID = 6;
+      public static final int FOLLOWER_LAUNCHER_MOTOR = 5;
+
+      public static final boolean kLeaderInverted = false;
+      public static final boolean KFollowerInverted= true;
+
+      public static final int kCurrentLimit = 60;
+
+      public static final IdleMode K_IDLE_MODE= IdleMode.kCoast;
+      
+      public static final int kPIDSlot = 0;
+
+      public static final double kP_S0 = 0.0002;
+      public static final double kI_S0 = 0.0;
+      public static final double kD_S0 = 0.0;
+
+      public static final double kS_S0 = 0.0;
+      public static final double kV_S0 = 0.00018;
+      public static final double kA_S0 = 0.0;
+
+      public static final double kMinOutput = -1.0;
+      public static final double kMaxOutput = 1.0;
+
+      public static final double kP_S1 = 0.00025;
+      public static final double kI_S1 = 0.0;
+      public static final double kD_S1 = 0.0;
+
+      public static final double kS_S1 = 0.0;
+      public static final double kV_S1 = 0.00018;
+      public static final double kA_S1 = 0.0;
+
+      public static final double kRpmTolerance = 75.0;
+      public static final double kDefaultShooterRPM = 4500.0;
+
+      public static final double kOpenLoopRampRate = 0.2;
+      public static final double kClosedLoopRampRate = 0.0; 
+
+      public static final ClosedLoopSlot kDefaultSlot = ClosedLoopSlot.kSlot0;
+    }
 }
