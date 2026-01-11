@@ -32,7 +32,40 @@ public final class Constants {
 
   }
 
+  public static class IntakeConstants {
+    public static final int ROLLER_MOTOR_ID = 7;
+    public static final int PIVOT_LEADER_ID = 8;
+    public static final int PIVOT_FOLLOWER_ID = 9;
+
+    //idle modes and motor inversion
+    public static final boolean kRollerInverted = false;
+    public static final boolean kPivotLeaderInverted = false;
+    public static final boolean kPivotFollowerInverted = false;
+    public static final IdleMode kIdleMode = IdleMode.kBrake;
+    public static final int kCurrentLimit = 40;
+    public static final double kOpenLoopRampRate = 0.5;
+    public static final double kClosedLoopRampRate = 0.0;
+
+    //pid
+    public static final double kP_PIVOT = 0.3, kI_PIVOT = 0.0, kD_PIVOT = 0.0;
+    public static final double kS_PIVOT = 0.2, kV_PIVOT = 0.1, kA_PIVOT = 0.01;
+    public static final double kMinOutput = -1.0, kMaxOutput = 1.0;
+
+    //motor limits
   
+    public static final double INTAKE_VOLTAGE_COMP = 12.0;
+
+    public static final int PIVOT_CURRENT_LIMIT = 40;
+
+
+    //velocity
+    public static final double INTAKE_RPM = 2500;
+  
+    public static final double kP = 0.00025;
+    public static final double kI = 0;
+    public static final double kD = 0;
+  }
+
 
   public static final class Swerve {
 
