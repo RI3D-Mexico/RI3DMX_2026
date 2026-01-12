@@ -110,4 +110,5 @@ public class IntakeSubsystem extends SubsystemBase {
  * Add absolute encoder
  * Configure absolute encoder
  * nice to have: feedforward
+ * create intake comands
  */
