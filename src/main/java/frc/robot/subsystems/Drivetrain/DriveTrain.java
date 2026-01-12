@@ -3,6 +3,10 @@ package frc.robot.subsystems.Drivetrain;
 import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -17,6 +21,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -84,6 +91,42 @@ public class DriveTrain extends SubsystemBase{
         field.setRobotPose(getPose());
 
         configureGyro();
+        configureAutoBuilder();
+    }
+
+     private void configureAutoBuilder() {
+        try {
+            System.out.println("Configuring Auto");
+            var config = RobotConfig.fromGUISettings();
+            AutoBuilder.configure(
+                this::getPose,   // Supplier of current robot pose
+                this::resetPose,         // Consumer for seeding pose against auto
+                this::getRobotRelativeSpeeds, // Supplier of current robot speeds
+                // Consumer of ChassisSpeeds and feedforwards to drive the robot
+                (speeds, feedforwards) -> driveRobotRelative(speeds),
+                new PPHolonomicDriveController(
+                    // PID constants for translation
+                    new PIDConstants(10, 0, 0),
+                    // PID constants for rotation
+                    new PIDConstants(7, 0, 0)
+                ),
+                config,
+                () -> {
+              // Boolean supplier that controls when the path will be mirrored for the red alliance
+              // This will flip the path being followed to the red side of the field.
+              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+              var alliance = DriverStation.getAlliance();
+              if (alliance.isPresent()) {
+                return alliance.get() == DriverStation.Alliance.Red;
+              }
+              return false;
+            },
+            this
+            );
+        } catch (Exception ex) {
+            DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
+        }
     }
 
     public void configureGyro(){
@@ -216,16 +259,6 @@ public class DriveTrain extends SubsystemBase{
         return Constants.Swerve.swerveOdoKinematics.toChassisSpeeds(getStates());
 
     }
-
-    public void goToCoorditanes(double x, double y, Rotation2d rotation){
-        
-        double speedx = (x - swervePoseEstimator.getEstimatedPosition().getX()) * Constants.Swerve.alignKP;
-        double speedy = (y - swervePoseEstimator.getEstimatedPosition().getY()) * Constants.Swerve.alignKP;
-        Rotation2d speedw = Rotation2d.fromDegrees((rotation.getDegrees() - swervePoseEstimator.getEstimatedPosition().getRotation().getDegrees()) * Constants.Swerve.alignKP);
-        drive(new Translation2d(speedx, -speedy), speedw.getDegrees(), true, true);
-
-    }
-
     
     public void updateOdometry() {
 
@@ -238,7 +271,7 @@ public class DriveTrain extends SubsystemBase{
     }
 
     @Override
-public void simulationPeriodic() {
+    public void simulationPeriodic() {
     
     ChassisSpeeds speeds = Constants.Swerve.swerveOdoKinematics.toChassisSpeeds(getTargetStates());
 

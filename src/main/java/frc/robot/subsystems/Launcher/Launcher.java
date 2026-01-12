@@ -57,11 +57,7 @@ public class Launcher extends SubsystemBase {
         .inverted(LauncherConstants.kLeaderInverted);
     
     leaderConfig.closedLoop
-        .pid(LauncherConstants.kP_S0, LauncherConstants.kI_S0, LauncherConstants.kD_S0)
-        .pid(LauncherConstants.kP_S1, LauncherConstants.kI_S1, LauncherConstants.kD_S1, ClosedLoopSlot.kSlot1)
-        .feedForward
-            .sva(LauncherConstants.kS_S0, LauncherConstants.kV_S0, LauncherConstants.kA_S0, ClosedLoopSlot.kSlot0)
-            .sva(LauncherConstants.kS_S1, LauncherConstants.kV_S1, LauncherConstants.kA_S1, ClosedLoopSlot.kSlot1);
+        .pid(LauncherConstants.kP_S0, LauncherConstants.kI_S0, LauncherConstants.kD_S0);
 
     
     leaderConfig.closedLoop.outputRange(LauncherConstants.kMinOutput, LauncherConstants.kMaxOutput);
@@ -95,6 +91,10 @@ public class Launcher extends SubsystemBase {
 
   public void setRPM(double rpm) {
     setRPM(rpm, LauncherConstants.kDefaultSlot);
+  }
+
+  public void setDC(double dc) {
+    leader.set(dc);
   }
 
   public void stopShooter() {
@@ -156,7 +156,7 @@ public class Launcher extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Launcher/TargetRPM", targetRPM);
-    SmartDashboard.putNumber("Launcher/ActualRPM", getRPM());
+    SmartDashboard.putNumber("Launcher/CurrentRPM", getRPM());
     SmartDashboard.putBoolean("Launcher/AtSpeed", atSpeed());
     SmartDashboard.putString("Launcher/Slot", activeSlot.toString());
 

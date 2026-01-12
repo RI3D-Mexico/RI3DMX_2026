@@ -1,0 +1,70 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.5324606741573037,
+        "y": 3.0974269662921348
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.5508377622859606,
+        "y": 2.317425839323697
+      },
+      "isLocked": false,
+      "linkedName": "Shooting Pos"
+    },
+    {
+      "anchor": {
+        "x": 1.8496629213483144,
+        "y": 1.6095393258426975
+      },
+      "prevControl": {
+        "x": 2.398448216962165,
+        "y": 1.6354625136157028
+      },
+      "nextControl": {
+        "x": 1.2023246351760744,
+        "y": 1.5789607515273494
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.061754908027382,
+        "y": 2.8419849860833675
+      },
+      "prevControl": {
+        "x": 1.1284861227997054,
+        "y": 2.6010556500219195
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "RI3D_Test_Auto_Paths",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 35.706691400602935
+  },
+  "useDefaultConstraints": true
+}

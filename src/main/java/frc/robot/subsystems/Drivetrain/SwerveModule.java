@@ -177,7 +177,7 @@ public class SwerveModule extends SubsystemBase {
 
     private void setAngle(SwerveModuleState desiredState) {
 
-        Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Constants.Swerve.maxSpeed * 0.1))
+        Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Constants.Swerve.maxSpeed * 0.01))
                 ? lastAngle
                 : desiredState.angle;
 

@@ -4,16 +4,48 @@
 
 package frc.robot;
 import frc.robot.commands.DriveTrainCommand;
+import frc.robot.commands.LaunchCommand;
 import frc.robot.subsystems.Drivetrain.DriveTrain;
+import frc.robot.subsystems.Launcher.Launcher;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 
 public class RobotContainer {
 
+   private final SendableChooser<Command> autoChooser;
+
   private final XboxController driverController = new XboxController(Constants.OperatorConstants.driverDriveTrainPort);
   private final DriveTrain m_NewDriveTrain = new DriveTrain();
+  private final Launcher m_Launcher = new Launcher();
+
+  private Trigger launcherTrigger = new Trigger(()-> driverController.getAButtonPressed());
 
   public RobotContainer() {
+
+    RegisterCommands();
+
+
+
+    // ...
+
+    // Build an auto chooser. This will use Commands.none() as the default option.
+    autoChooser = AutoBuilder.buildAutoChooser();
+    autoChooser.setDefaultOption("Test", new PathPlannerAuto("Ri3D_Test_Auto"));
+
+
+    // Another option that allows you to specify the default auto by its name
+    // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
+
+    SmartDashboard.putData("Auto Chooser", autoChooser);
     
     m_NewDriveTrain.setDefaultCommand(new DriveTrainCommand(m_NewDriveTrain, 
                                                                ()-> -driverController.getLeftY(), 
@@ -21,5 +53,21 @@ public class RobotContainer {
                                                                ()-> -driverController.getRightX(),
                                                                ()-> driverController.getBButtonPressed(),
                                                                ()-> driverController.getYButtonPressed()));
+    configureBindings();
+  }
+
+  public void configureBindings(){
+
+
+    launcherTrigger.onTrue(new LaunchCommand(m_Launcher, ()-> driverController.getRightTriggerAxis()));
+
+  }
+
+  public void RegisterCommands(){
+
+  }
+
+  public Command getAutonomousCommand() {
+    return autoChooser.getSelected();
   }
 }

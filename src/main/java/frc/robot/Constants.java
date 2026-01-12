@@ -83,7 +83,7 @@ public final class Constants {
     //public static final double closedLoopRamp = 0.0;
 
   
-    public static final double driveGearRatio = (153.0 / 25.0); 
+    public static final double driveGearRatio = (153.0 / 25.0); //6.12
     public static final double angleGearRatio = (150.0 / 7.0); // 21.42:1
 
     public static final double drivePPkP = 2.5;
@@ -211,17 +211,17 @@ public final class Constants {
 
   public static final class LauncherConstants {
     // Motores del launcher
-      public static final int LEADER_LAUNCHER_MOTOR_ID = 6;
-      public static final int FOLLOWER_LAUNCHER_MOTOR = 5;
+      public static final int LEADER_LAUNCHER_MOTOR_ID = 14;
+      public static final int FOLLOWER_LAUNCHER_MOTOR = 13;
 
     // Motores del indexer
-      public static final int INDEXER_MOTOR_ID = 7;
+      public static final int INDEXER_MOTOR_ID = 8;
 
       public static final boolean kLeaderInverted = false;
       public static final boolean KFollowerInverted= false;
       public static final boolean kIndexerInverted = false;
 
-      public static final int kCurrentLimit = 60;
+      public static final int kCurrentLimit = 80;
       public static final int kIndexerCurrentLimit = 40;
 
       public static final IdleMode K_IDLE_MODE= IdleMode.kCoast;
@@ -235,24 +235,24 @@ public final class Constants {
       
       public static final int kPIDSlot = 0;
 
-      public static final double kP_S0 = 0.0002;
+      public static final double kP_S0 = 0.0007;
       public static final double kI_S0 = 0.0;
       public static final double kD_S0 = 0.0;
 
       public static final double kS_S0 = 0.0;
       public static final double kV_S0 = 0.00018;
-      public static final double kA_S0 = 0.0;
+      public static final double kA_S0 = 0.0001;
 
       public static final double kMinOutput = -1.0;
       public static final double kMaxOutput = 1.0;
 
-      public static final double kP_S1 = 0.00025;
+      public static final double kP_S1 = 0.2;
       public static final double kI_S1 = 0.0;
       public static final double kD_S1 = 0.0;
 
       public static final double kS_S1 = 0.0;
       public static final double kV_S1 = 0.00018;
-      public static final double kA_S1 = 0.0;
+      public static final double kA_S1 = 0.02;
 
       public static final double kRpmTolerance = 75.0;
       public static final double kDefaultShooterRPM = 4500.0;
