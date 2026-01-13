@@ -4,6 +4,7 @@
 
 package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -13,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveTrainCommand;
 import frc.robot.commands.IntakeCommand;
@@ -33,7 +35,7 @@ public class RobotContainer {
   private final IntakeSubsystem m_Intake = new IntakeSubsystem();
 
 
-  private Trigger launcherTrigger = new Trigger(()-> driverController.getAButtonPressed());
+  Trigger intakeTrigger = new Trigger(()-> driverController.getAButtonPressed());
 
   public RobotContainer() {
 
@@ -52,22 +54,22 @@ public class RobotContainer {
     // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
-    m_Launcher.setDefaultCommand(new TeleopLauncherControl( m_Launcher,() -> driverController.getRightTriggerAxis()));
+    m_Launcher.setDefaultCommand(new TeleopLauncherControl(m_Launcher, driverController::getRightTriggerAxis));
+    //m_Launcher.setDefaultCommand(new TeleopLauncherControl( m_Launcher,() -> driverController.getRightTriggerAxis()));
 
-    m_NewDriveTrain.setDefaultCommand(new DriveTrainCommand(m_NewDriveTrain, 
-                                                               ()-> -driverController.getLeftY(), 
-                                                               ()-> -driverController.getLeftX(),
-                                                               ()-> -driverController.getRightX(),
-                                                               ()-> driverController.getBButtonPressed(),
-                                                               ()-> driverController.getYButtonPressed()));
+    m_NewDriveTrain.setDefaultCommand(new DriveTrainCommand(m_NewDriveTrain,
+                                                              ()-> -driverController.getLeftY(),
+                                                              ()-> -driverController.getLeftX(),
+                                                              ()-> -driverController.getRightX(),
+                                                              ()-> driverController.getBButtonPressed(),
+                                                              ()-> driverController.getYButtonPressed()));
     
     //configureBindings();
   }
 
   public void configureBindings(){
 
-    //launcherTrigger.onTrue(new LaunchCommand(m_Launcher, ()-> driverController.getRightTriggerAxis()));
-    driverController..toggleOnTrue(new IntakeCommand(m_Intake, driverController::getXButton));
+    intakeTrigger.toggleOnTrue(new IntakeCommand(m_Intake));
 
   }
 

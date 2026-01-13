@@ -8,12 +8,9 @@ import frc.robot.subsystems.Intake.IntakeSubsystem;
 public class IntakeCommand extends Command {
     private final IntakeSubsystem m_intake;
     private double position;
-    private boolean finished;
-    private BooleanSupplier Xbutton;
 
-    public IntakeCommand(IntakeSubsystem intake,BooleanSupplier Xbutton) {
+    public IntakeCommand(IntakeSubsystem intake) {
         this.m_intake = intake;
-        this.Xbutton = Xbutton;
         
         addRequirements(intake);
 
@@ -22,7 +19,6 @@ public class IntakeCommand extends Command {
     @Override
     public void initialize() {
         position = 0.0;
-        finished = false;
     }
 
      @Override
@@ -34,7 +30,7 @@ public class IntakeCommand extends Command {
     @Override
     public void  end(boolean interrupted){
         m_intake.stopRoller();
-        m_intake.setPivotPosition(0.0)
+        m_intake.setPivotPosition(0.0);
     }
 
     @Override
