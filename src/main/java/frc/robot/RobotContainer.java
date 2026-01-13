@@ -15,12 +15,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.ClimberCommand;
 import frc.robot.commands.DriveTrainCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.TeleopLauncherControl;
 import frc.robot.subsystems.Drivetrain.DriveTrain;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
 import frc.robot.subsystems.Launcher.Launcher;
+import frc.robot.subsystems.Climber.Climber;
+
 
 
 public class RobotContainer {
@@ -31,9 +34,11 @@ public class RobotContainer {
   private final DriveTrain m_NewDriveTrain = new DriveTrain();
   private final Launcher m_Launcher = new Launcher();
   private final IntakeSubsystem m_Intake = new IntakeSubsystem();
+  private final Climber m_climber = new Climber();
 
 
   Trigger intakeTrigger = new Trigger(()-> driverController.getAButtonPressed());
+  Trigger climberTrigger = new Trigger(()-> driverController.getStartButton()).and(intakeTrigger)driverController.getBackButton());
 
   public RobotContainer() {
 
@@ -62,12 +67,13 @@ public class RobotContainer {
                                                               ()-> driverController.getBButtonPressed(),
                                                               ()-> driverController.getYButtonPressed()));
     
-    //configureBindings();
+    configureBindings();
   }
 
   public void configureBindings(){
 
     intakeTrigger.toggleOnTrue(new IntakeCommand(m_Intake));
+    climberTrigger.toggleOnTrue(new ClimberCommand(m_climber));
 
   }
 
