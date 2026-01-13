@@ -28,7 +28,7 @@ public final class Constants {
   public static class OperatorConstants {
 
     public static final int driverDriveTrainPort = 0;
-    // public static final int driverMechanismsPort = 1;
+    public static final int driverMechanismsPort = 1;
 
   }
 
@@ -229,7 +229,7 @@ public final class Constants {
       public static final double kIdleShooterRPM = 1500.0;
       public static final double kShootTriggerDeadband = 0.10;
       
-      public static final double kIndexerFeedPercent = 0.35;
+      public static final double kIndexerFeedPercent = 0.75;
 
       public static final boolean kOnlyFeedWhenAtSpeed = true;
       
@@ -237,7 +237,7 @@ public final class Constants {
 
       public static final double kP_S0 = 0.0007;
       public static final double kI_S0 = 0.0;
-      public static final double kD_S0 = 0.0;
+      public static final double kD_S0 = 0.002;
 
       public static final double kS_S0 = 0.0;
       public static final double kV_S0 = 0.00018;
@@ -255,7 +255,7 @@ public final class Constants {
       public static final double kA_S1 = 0.02;
 
       public static final double kRpmTolerance = 75.0;
-      public static final double kDefaultShooterRPM = 4500.0;
+      public static final double kDefaultShooterRPM = 2400.0;
 
       public static final double kOpenLoopRampRate = 0.2;
       public static final double kClosedLoopRampRate = 0.0; 
