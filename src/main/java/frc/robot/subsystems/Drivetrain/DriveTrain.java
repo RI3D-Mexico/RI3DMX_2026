@@ -106,9 +106,9 @@ public class DriveTrain extends SubsystemBase{
                 (speeds, feedforwards) -> driveRobotRelative(speeds),
                 new PPHolonomicDriveController(
                     // PID constants for translation
-                    new PIDConstants(10, 0, 0),
+                    new PIDConstants(5, 0, 0),
                     // PID constants for rotation
-                    new PIDConstants(7, 0, 0)
+                    new PIDConstants(2, 0, 0)
                 ),
                 config,
                 () -> {
@@ -242,10 +242,13 @@ public class DriveTrain extends SubsystemBase{
     }
 
 
+    // In DriveTrain.java
     public void resetPose(Pose2d pose) {
-    
+    // 1. Reset the Odometry
         swerveOdometry.resetPosition(getOdoYaw(), getPositions(), pose);
     
+    // 2. IMPORTANT: Reset the Pose Estimator too!
+        swervePoseEstimator.resetPosition(getOdoYaw(), getPositions(), pose);
     }
 
     public void driveRobotRelative(ChassisSpeeds speeds){
@@ -270,85 +273,43 @@ public class DriveTrain extends SubsystemBase{
         swerveOdometry.resetPosition(getOdoYaw(), getPositions(), swervePoseEstimator.getEstimatedPosition());
     }
 
-    @Override
+   @Override
     public void simulationPeriodic() {
-    
-    ChassisSpeeds speeds = Constants.Swerve.swerveOdoKinematics.toChassisSpeeds(getTargetStates());
+        // 1. Update the Simulated Gyro (Pigeon 2)
+        // We calculate how fast the robot is rotating based on the target swerve states
+        ChassisSpeeds speeds = Constants.Swerve.swerveOdoKinematics.toChassisSpeeds(getTargetStates());
+        
+        // 0.02 is the standard loop time (20ms)
+        double dt = 0.02; 
+        
+        // Update Pigeon SimState (Yaw is in degrees)
+        double changeInYawDegrees = Math.toDegrees(speeds.omegaRadiansPerSecond * dt);
+        gyro.getSimState().addYaw(changeInYawDegrees);
 
-    
-    double changeInYawDegrees = Math.toDegrees(speeds.omegaRadiansPerSecond * 0.01);
-    
-    // Update the simulated Pigeon2 so your field-centric drive works
-    gyro.getSimState().addYaw(changeInYawDegrees);
-
-    Pose2d currentPose = swervePoseEstimator.getEstimatedPosition();
-    
-    // Apply the movement (Twist) to the current pose
-    Pose2d newPose = currentPose.exp(
-        new Twist2d(
-            speeds.vxMetersPerSecond * 0.02, 
-            speeds.vyMetersPerSecond * 0.02, 
-            speeds.omegaRadiansPerSecond * 0.02
-        )
-    );
-
-    // Force the pose estimator to this new calculated position
-    // (We use resetPosition because the real encoders are still reading 0)
-    swervePoseEstimator.resetPosition(
-        getOdoYaw(), 
-        getPositions(), // These are still 0, but it doesn't matter because we overwrite the pose below
-        newPose
-    );
-}
+        // 2. Update Each Swerve Module
+        for (SwerveModule module : swerveModules) {
+            module.simulationPeriodic(dt);
+        }
+        
+        // 3. Update Odometry
+        // We do NOT need to manually set the robot pose here anymore.
+        // Because we updated the "Simulated Encoders" in step 2, the standard updateOdometry() 
+        // running in periodic() will effectively "see" the robot moving and update the pose naturally.
+    }
 
     @Override
-    public void periodic() {
-        //swerveOdometry.update(getOdoYaw(), getPositions());
-        //swervePoseEstimator.update(getOdoYaw(), getPositions());
-        // //swervePoseEstimator.addVisionMeasurement(getPose(), 0);
-        // limef = NetworkTableInstance.getDefault().getTable(Constants.Sensors.limef);
-        // limeb = NetworkTableInstance.getDefault().getTable(Constants.Sensors.limeb);        
-        
-        
+    public void periodic() {    
+                
         SmartDashboard.putString("Odometry: ", swerveOdometry.getPoseMeters().getTranslation().toString());
         SmartDashboard.putNumber("gyro", getYaw().getDegrees());
         SmartDashboard.putNumber("gyro Odo", getOdoYaw().getDegrees());
 
-        // if(limeb.getEntry("tv").getDouble(0) == 1){
-
-        //     poseData = limeb.getEntry("botpos_wpiblue").getDoubleArray(poseData);
-        //     visionMeasurement = new Pose2d(poseData[0], poseData[1], getOdoYaw());
-        //     swervePoseEstimator.addVisionMeasurement(visionMeasurement, Timer.getFPGATimestamp());     
-
-        // }
-
-
+    
         updateOdometry();
         field.setRobotPose(swervePoseEstimator.getEstimatedPosition());
 
-        /* 
-        double loggingModulesStates [] = {
-            swerveModules[0].getState().angle.getDegrees(), swerveModules[0].getState().speedMetersPerSecond * 50,
-            swerveModules[1].getState().angle.getDegrees(), swerveModules[1].getState().speedMetersPerSecond * 50,
-            swerveModules[2].getState().angle.getDegrees(), swerveModules[2].getState().speedMetersPerSecond * 50,
-            swerveModules[3].getState().angle.getDegrees(), swerveModules[3].getState().speedMetersPerSecond * 50   
-        };
-
-
-        SmartDashboard.putNumber("Angle FL: ", swerveModules[0].getState().angle.getDegrees());
-        SmartDashboard.putNumber("Angle FR: ", swerveModules[1].getState().angle.getDegrees());
-        SmartDashboard.putNumber("Angle RL: ", swerveModules[2].getState().angle.getDegrees());
-        SmartDashboard.putNumber("Angle RR: ", swerveModules[3].getState().angle.getDegrees());
-
-        SmartDashboard.putNumber("Angle EFL: ", swerveModules[0].getCANCoderAngle().getDegrees());
-        SmartDashboard.putNumber("Angle EFR: ", swerveModules[1].getCANCoderAngle().getDegrees());
-        SmartDashboard.putNumber("Angle ERL: ", swerveModules[2].getCANCoderAngle().getDegrees());
-        SmartDashboard.putNumber("Angle ERR: ", swerveModules[3].getCANCoderAngle().getDegrees());
-
-            SmartDashboard.putNumberArray("SwerveModuleStates", loggingModulesStates);*/
-
-        publisherActualStates.set(getStates());       // The states measured by encoders
-        publisherTargetStates.set(getTargetStates()); // The states calculated by logic
+        publisherActualStates.set(getStates());       
+        publisherTargetStates.set(getTargetStates()); 
         posePublisher.set(swervePoseEstimator.getEstimatedPosition());
 
     }

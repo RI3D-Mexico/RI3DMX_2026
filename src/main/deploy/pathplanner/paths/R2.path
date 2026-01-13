@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.5324606741573037,
-        "y": 3.0974269662921348
+        "x": 3.3375505617977526,
+        "y": 3.484685393258427
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5508377622859606,
-        "y": 2.317425839323697
+        "x": 3.4884785242071437,
+        "y": 2.495956351050792
       },
       "isLocked": false,
       "linkedName": "Shooting Pos"
@@ -20,12 +20,12 @@
         "y": 1.6095393258426975
       },
       "prevControl": {
-        "x": 2.398448216962165,
-        "y": 1.6354625136157028
+        "x": 2.2200035381726595,
+        "y": 1.6208562964597206
       },
       "nextControl": {
-        "x": 1.2023246351760744,
-        "y": 1.5789607515273494
+        "x": 1.1400387012275641,
+        "y": 1.5878544333858609
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +36,8 @@
         "y": 2.8419849860833675
       },
       "prevControl": {
-        "x": 1.1284861227997054,
-        "y": 2.6010556500219195
+        "x": 1.1467039303494906,
+        "y": 2.6068602030286714
       },
       "nextControl": null,
       "isLocked": false,
@@ -58,13 +58,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -179.46818880584152
   },
   "reversed": false,
   "folder": "RI3D_Test_Auto_Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 35.706691400602935
+    "rotation": -152.19854122006598
   },
   "useDefaultConstraints": true
 }

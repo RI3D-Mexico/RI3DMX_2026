@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.250850906456416,
-        "y": 3.0863805720749715
+        "x": 3.302307468976527,
+        "y": 3.3540981490263233
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.5324606741573037,
-        "y": 3.0974269662921348
+        "x": 3.3375505617977526,
+        "y": 3.484685393258427
       },
       "prevControl": {
-        "x": 3.415074344317914,
-        "y": 3.252066686614511
+        "x": 3.309836396522471,
+        "y": 3.206629533712466
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 35.706691400602935
+    "rotation": -152.19854122006598
   },
   "reversed": false,
   "folder": "RI3D_Test_Auto_Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 178.6779318158101
   },
   "useDefaultConstraints": true
 }
