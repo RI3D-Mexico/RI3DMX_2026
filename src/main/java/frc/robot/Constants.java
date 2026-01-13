@@ -39,7 +39,7 @@ public final class Constants {
 
     //idle modes and motor inversion
     public static final boolean kRollerInverted = false;
-    public static final boolean kPivotLeaderInverted = true;
+    public static final boolean kPivotLeaderInverted = false;
     public static final boolean kPivotFollowerInverted = false;
     public static final IdleMode kIdleMode = IdleMode.kBrake;
     public static final int kCurrentLimit = 40;
@@ -255,7 +255,7 @@ public final class Constants {
       public static final double kA_S1 = 0.02;
 
       public static final double kRpmTolerance = 75.0;
-      public static final double kDefaultShooterRPM = 1500.0;
+      public static final double kDefaultShooterRPM = 2850.0;
 
       public static final double kOpenLoopRampRate = 0.2;
       public static final double kClosedLoopRampRate = 0.0; 

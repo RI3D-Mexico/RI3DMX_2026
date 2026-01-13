@@ -41,12 +41,12 @@ public class RobotContainer {
 
 
 
-  Trigger intakeTrigger = new Trigger(()-> driverController.getAButtonPressed());
-  Trigger climberTrigger = new Trigger(()-> driverController.getStartButtonPressed()).and(()-> driverController.getBackButtonPressed());
-  Trigger zeroClimberTrigger = new Trigger(()-> driverController.getLeftBumperButtonPressed());
-  Trigger moveClimberUpTrigger = new Trigger(()-> driverController.getPOV() == 0);
-  Trigger moveClimberDownTrigger = new Trigger(()-> driverController.getPOV() == 180);
-  Trigger stopClimber = new Trigger(()-> driverController.getPOV() < 0);
+  //Trigger intakeTrigger = new Trigger(()-> driverController.getAButtonPressed());
+  //Trigger climberTrigger = new Trigger(()-> driverController.getStartButtonPressed()).and(()-> driverController.getBackButtonPressed());
+  //Trigger zeroClimberTrigger = new Trigger(()-> driverController.getLeftBumperButtonPressed());
+  //Trigger moveClimberUpTrigger = new Trigger(()-> driverController.getPOV() == 0);
+  //Trigger moveClimberDownTrigger = new Trigger(()-> driverController.getPOV() == 180);
+  //Trigger stopClimber = new Trigger(()-> driverController.getPOV() < 0);
 
   public RobotContainer() {
 
