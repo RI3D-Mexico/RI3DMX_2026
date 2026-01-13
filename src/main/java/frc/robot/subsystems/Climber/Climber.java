@@ -2,7 +2,9 @@ package frc.robot.subsystems.Climber;
 
 import static frc.robot.Constants.ClimberConstants.*;
 
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.PersistMode;
@@ -20,12 +22,16 @@ public class Climber extends SubsystemBase {
       new SparkMax(ClimberConstants.CLIMBER_MOTOR_ID, MotorType.kBrushless);
 
   private final RelativeEncoder encoder;
+  private final SparkClosedLoopController controller;
+
 
   private double holdSetpointRot = 0.0;
 
   public Climber() {
 
+    
     encoder = climberMotor.getEncoder();
+    controller = climberMotor.getClosedLoopController();
 
     SparkMaxConfig climberConfig = new SparkMaxConfig();
 
@@ -45,8 +51,6 @@ public class Climber extends SubsystemBase {
     );
 
     holdSetpointRot = getPositionRot();
-
-
   }
 
   public double getPositionRot() {
@@ -56,6 +60,10 @@ public class Climber extends SubsystemBase {
   public void zeroPosition() {
     encoder.setPosition(0.0);
     holdSetpointRot = 0.0;
+  }
+
+  public void setPosition(double holdSetpointRot ) {
+    controller.setSetpoint(holdSetpointRot, ControlType.kPosition);
   }
 
   public void setManual(double percent) {
