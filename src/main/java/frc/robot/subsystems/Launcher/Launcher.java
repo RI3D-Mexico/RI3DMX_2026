@@ -57,8 +57,8 @@ public class Launcher extends SubsystemBase {
         .inverted(LauncherConstants.kLeaderInverted);
     
     leaderConfig.closedLoop
-        .pid(LauncherConstants.kP_S0, LauncherConstants.kI_S0, LauncherConstants.kD_S0);
-
+        .pid(LauncherConstants.kP_S0, LauncherConstants.kI_S0, LauncherConstants.kD_S0)
+        .feedForward.kV(LauncherConstants.kV_S0);
     
     leaderConfig.closedLoop.outputRange(LauncherConstants.kMinOutput, LauncherConstants.kMaxOutput);
 
