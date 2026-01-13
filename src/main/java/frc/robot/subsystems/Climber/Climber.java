@@ -2,6 +2,7 @@ package frc.robot.subsystems.Climber;
 
 import static frc.robot.Constants.ClimberConstants.*;
 
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -12,8 +13,10 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
+import frc.robot.Constants.LauncherConstants;
 
 
 public class Climber extends SubsystemBase {
@@ -41,8 +44,13 @@ public class Climber extends SubsystemBase {
         .openLoopRampRate(kOpenLoopRampRate)
         .closedLoopRampRate(kClosedLoopRampRate);
 
+    climberConfig
+        .closedLoop
+        .pid(ClimberConstants.kHold_kP,0.0, 0.0)
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder);
 
     climberConfig.inverted(kInverted);
+
 
     climberMotor.configure(
         climberConfig,
@@ -51,6 +59,7 @@ public class Climber extends SubsystemBase {
     );
 
     holdSetpointRot = getPositionRot();
+    zeroPosition();
   }
 
   public double getPositionRot() {
@@ -64,6 +73,12 @@ public class Climber extends SubsystemBase {
 
   public void setPosition(double holdSetpointRot ) {
     controller.setSetpoint(holdSetpointRot, ControlType.kPosition);
+  }
+
+  public void setClimberDC(double dc) {
+
+    climberMotor.set(dc);
+
   }
 
   public void setManual(double percent) {
@@ -104,5 +119,11 @@ public class Climber extends SubsystemBase {
 
   public void stop() {
     climberMotor.stopMotor();
+  }
+
+  @Override
+  public void periodic(){
+    SmartDashboard.putNumber("Climber/Pos", getPositionRot());
+
   }
 }

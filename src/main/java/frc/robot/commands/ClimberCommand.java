@@ -6,29 +6,39 @@ import frc.robot.subsystems.Climber.Climber;
 public class ClimberCommand extends Command {
 
     private Climber m_climber;
-    private boolean finished = false;
 
 
-    public ClimberCommand(Climber climber) {
-        this.m_climber = climber;
+    public ClimberCommand(Climber m_Climber) {
+        this.m_climber = m_Climber;
 
-        addRequirements(climber);
+        addRequirements(m_Climber);
     }
 
     @Override
     public void initialize() {
-        m_climber.setPosition(54.0);
+
+        m_climber.setPosition(3.5);
     }
 
     @Override
     public void execute() {
-        m_climber.setPosition(0.0);
-        finished = true;
+
+        System.out.println("AQUI PT2");
+
+        m_climber.setPosition(3.5);
+    }
+
+    @Override
+    public void end(boolean isInterrupted){
+
+        m_climber.setPosition(0.1);
+
+
     }
 
     @Override
     public boolean isFinished() {
-        m_climber.setPosition(0.0);
-        return finished;
+        
+        return false;
     }
 }

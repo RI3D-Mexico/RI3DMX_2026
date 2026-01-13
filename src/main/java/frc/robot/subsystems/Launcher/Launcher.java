@@ -10,6 +10,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 
 
@@ -57,6 +58,7 @@ public class Launcher extends SubsystemBase {
         .inverted(LauncherConstants.kLeaderInverted);
     
     leaderConfig.closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .pid(LauncherConstants.kP_S0, LauncherConstants.kI_S0, LauncherConstants.kD_S0)
         .feedForward.kV(LauncherConstants.kV_S0);
     

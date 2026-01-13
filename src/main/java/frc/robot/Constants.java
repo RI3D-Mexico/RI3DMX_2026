@@ -33,9 +33,9 @@ public final class Constants {
   }
 
   public static class IntakeConstants {
-    public static final int ROLLER_MOTOR_ID = 7;
-    public static final int PIVOT_LEADER_ID = 8;
-    public static final int PIVOT_FOLLOWER_ID = 9;
+    public static final int ROLLER_MOTOR_ID = 3;
+    public static final int PIVOT_LEADER_ID = 4;
+    public static final int PIVOT_FOLLOWER_ID = 5;
 
     //idle modes and motor inversion
     public static final boolean kRollerInverted = false;
@@ -265,29 +265,29 @@ public final class Constants {
     }
 
   public static final class ClimberConstants {
-  public static final int CLIMBER_MOTOR_ID = 20; 
-  public static final boolean kInverted = false;
+      public static final int CLIMBER_MOTOR_ID = 17; 
+      public static final boolean kInverted = false;
 
-  public static final IdleMode K_IDLE_MODE= IdleMode.kBrake;
-  public static final int kCurrentLimit = 35;
+      public static final IdleMode K_IDLE_MODE= IdleMode.kBrake;
+      public static final int kCurrentLimit = 80;
 
-  public static final double kOpenLoopRampRate = 0.15;
-  public static final double kClosedLoopRampRate = 0.0;
+      public static final double kOpenLoopRampRate = 0.15;
+      public static final double kClosedLoopRampRate = 0.0;
 
-  //TBD
-  public static final double kGearRatio = 74.0;
+      //TBD
+      public static final double kGearRatio = 74.0;
 
-  public static final double kMinPosRot = 0.0;
-  public static final double kMaxPosRot = 35.0;
+      public static final double kMinPosRot = 0.0;
+      public static final double kMaxPosRot = 35.0;
 
-  public static final double kDeadband = 0.08;
-  public static final double kMaxUpPercent = 1.0;
-  public static final double kMaxDownPercent = 0.6;
+      public static final double kDeadband = 0.08;
+      public static final double kMaxUpPercent = 1.0;
+      public static final double kMaxDownPercent = 0.6;
 
-  public static final boolean kHoldWhenIdle = true;
+      public static final boolean kHoldWhenIdle = true;
 
-  public static final double kHold_kP = 0.08;
-  public static final double kHoldMaxPercent = 0.25;
-}
+      public static final double kHold_kP = 5.0;
+      public static final double kHoldMaxPercent = 0.25;
+    }
 
 }

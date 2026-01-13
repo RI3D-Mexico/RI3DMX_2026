@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ClimberCommand;
+import frc.robot.commands.ClimberDefaultCommand;
 import frc.robot.commands.DriveTrainCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.TeleopLauncherControl;
@@ -33,12 +34,16 @@ public class RobotContainer {
   private final XboxController driverController = new XboxController(Constants.OperatorConstants.driverDriveTrainPort);
   private final DriveTrain m_NewDriveTrain = new DriveTrain();
   private final Launcher m_Launcher = new Launcher();
-  private final IntakeSubsystem m_Intake = new IntakeSubsystem();
+  //private final IntakeSubsystem m_Intake = new IntakeSubsystem();
   private final Climber m_climber = new Climber();
 
 
-  Trigger intakeTrigger = new Trigger(()-> driverController.getAButtonPressed());
-  Trigger climberTrigger = new Trigger(()-> driverController.getStartButton()).and(intakeTrigger)driverController.getBackButton());
+  //Trigger intakeTrigger = new Trigger(()-> driverController.getAButtonPressed());
+  Trigger climberTrigger = new Trigger(()-> driverController.getStartButtonPressed()).and(()-> driverController.getBackButtonPressed());
+  Trigger zeroClimberTrigger = new Trigger(()-> driverController.getLeftBumperButtonPressed());
+  Trigger moveClimberUpTrigger = new Trigger(()-> driverController.getPOV() == 0);
+  Trigger moveClimberDownTrigger = new Trigger(()-> driverController.getPOV() == 180);
+  Trigger stopClimber = new Trigger(()-> driverController.getPOV() < 0);
 
   public RobotContainer() {
 
@@ -57,6 +62,9 @@ public class RobotContainer {
     // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    //m_climber.setDefaultCommand(new ClimberDefaultCommand(m_climber));
+
     m_Launcher.setDefaultCommand(new TeleopLauncherControl(m_Launcher, driverController::getRightTriggerAxis));
     //m_Launcher.setDefaultCommand(new TeleopLauncherControl( m_Launcher,() -> driverController.getRightTriggerAxis()));
 
@@ -72,8 +80,13 @@ public class RobotContainer {
 
   public void configureBindings(){
 
-    intakeTrigger.toggleOnTrue(new IntakeCommand(m_Intake));
+    //intakeTrigger.toggleOnTrue(new IntakeCommand(m_Intake));
     climberTrigger.toggleOnTrue(new ClimberCommand(m_climber));
+    zeroClimberTrigger.onTrue(new InstantCommand(()-> m_climber.zeroPosition()).alongWith(new PrintCommand("Zeroed Climber")));
+    moveClimberUpTrigger.whileTrue(new InstantCommand(()-> m_climber.setClimberDC(1.0)));
+    moveClimberDownTrigger.whileTrue(new InstantCommand(()-> m_climber.setClimberDC(-1.0)));
+    stopClimber.whileTrue(new InstantCommand(()-> m_climber.stop()));
+
 
   }
 
