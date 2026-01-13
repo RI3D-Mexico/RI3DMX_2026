@@ -72,6 +72,7 @@ public class Climber extends SubsystemBase {
   }
 
   public void setPosition(double holdSetpointRot ) {
+    System.out.println("currepos: "+ encoder.getPosition()+" setpoint: "+ holdSetpointRot);
     controller.setSetpoint(holdSetpointRot, ControlType.kPosition);
   }
 
@@ -124,6 +125,6 @@ public class Climber extends SubsystemBase {
   @Override
   public void periodic(){
     SmartDashboard.putNumber("Climber/Pos", getPositionRot());
-
+    
   }
 }

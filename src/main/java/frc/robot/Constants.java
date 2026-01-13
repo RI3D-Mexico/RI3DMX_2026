@@ -33,13 +33,13 @@ public final class Constants {
   }
 
   public static class IntakeConstants {
-    public static final int ROLLER_MOTOR_ID = 3;
-    public static final int PIVOT_LEADER_ID = 4;
-    public static final int PIVOT_FOLLOWER_ID = 5;
+    public static final int ROLLER_MOTOR_ID =60;
+    public static final int PIVOT_LEADER_ID = 54;
+    public static final int PIVOT_FOLLOWER_ID = 16;
 
     //idle modes and motor inversion
     public static final boolean kRollerInverted = false;
-    public static final boolean kPivotLeaderInverted = false;
+    public static final boolean kPivotLeaderInverted = true;
     public static final boolean kPivotFollowerInverted = false;
     public static final IdleMode kIdleMode = IdleMode.kBrake;
     public static final int kCurrentLimit = 40;
@@ -47,8 +47,8 @@ public final class Constants {
     public static final double kClosedLoopRampRate = 0.0;
 
     //pid
-    public static final double kP_PIVOT = 0.3, kI_PIVOT = 0.0, kD_PIVOT = 0.0;
-    public static final double kS_PIVOT = 0.2, kV_PIVOT = 0.1, kA_PIVOT = 0.01;
+    public static final double kP_PIVOT = 1, kI_PIVOT = 0.0, kD_PIVOT = 0.0;
+    public static final double kS_PIVOT = 1, kV_PIVOT = 0.0, kA_PIVOT = 0.01;
     public static final double kMinOutput = -1.0, kMaxOutput = 1.0;
 
     //motor limits
@@ -59,7 +59,7 @@ public final class Constants {
 
 
     //velocity
-    public static final double INTAKE_RPM = 2500;
+    public static final double INTAKE_RPM = 800;
   
     public static final double kP = 0.00025;
     public static final double kI = 0;
@@ -128,7 +128,7 @@ public final class Constants {
     public static final double alignFF = 0.0;
 
     /* Steer Motor PID Values */
-    public static final double angleKP = 0.02;
+    public static final double angleKP = 0.5;
     public static final double angleKI = 0.0;
     public static final double angleKD = 0.0;
     public static final double angleKFF = 0.0;
@@ -226,7 +226,7 @@ public final class Constants {
 
       public static final IdleMode K_IDLE_MODE= IdleMode.kCoast;
       
-      public static final double kIdleShooterRPM = 1500.0;
+      public static final double kIdleShooterRPM = 2500.0;
       public static final double kShootTriggerDeadband = 0.10;
       
       public static final double kIndexerFeedPercent = 0.75;
@@ -255,7 +255,7 @@ public final class Constants {
       public static final double kA_S1 = 0.02;
 
       public static final double kRpmTolerance = 75.0;
-      public static final double kDefaultShooterRPM = 2400.0;
+      public static final double kDefaultShooterRPM = 1500.0;
 
       public static final double kOpenLoopRampRate = 0.2;
       public static final double kClosedLoopRampRate = 0.0; 

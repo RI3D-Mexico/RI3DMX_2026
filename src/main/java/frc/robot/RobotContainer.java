@@ -20,8 +20,10 @@ import frc.robot.commands.ClimberDefaultCommand;
 import frc.robot.commands.DriveTrainCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.TeleopLauncherControl;
+import frc.robot.commands.IntakeManualTestCommand;
 import frc.robot.subsystems.Drivetrain.DriveTrain;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
+
 import frc.robot.subsystems.Launcher.Launcher;
 import frc.robot.subsystems.Climber.Climber;
 
@@ -34,11 +36,12 @@ public class RobotContainer {
   private final XboxController driverController = new XboxController(Constants.OperatorConstants.driverDriveTrainPort);
   private final DriveTrain m_NewDriveTrain = new DriveTrain();
   private final Launcher m_Launcher = new Launcher();
-  //private final IntakeSubsystem m_Intake = new IntakeSubsystem();
+  private final IntakeSubsystem m_Intake = new IntakeSubsystem();
   private final Climber m_climber = new Climber();
 
 
-  //Trigger intakeTrigger = new Trigger(()-> driverController.getAButtonPressed());
+
+  Trigger intakeTrigger = new Trigger(()-> driverController.getAButtonPressed());
   Trigger climberTrigger = new Trigger(()-> driverController.getStartButtonPressed()).and(()-> driverController.getBackButtonPressed());
   Trigger zeroClimberTrigger = new Trigger(()-> driverController.getLeftBumperButtonPressed());
   Trigger moveClimberUpTrigger = new Trigger(()-> driverController.getPOV() == 0);
@@ -49,7 +52,8 @@ public class RobotContainer {
 
     registerCommands();
 
-
+    double STOW_ROT = 0.0;
+    double INTAKE_DOWN_ROT = 1;
 
     DriverStation.silenceJoystickConnectionWarning(true);
     // Build an auto chooser. This will use Commands.none() as the default option.
@@ -64,7 +68,7 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     //m_climber.setDefaultCommand(new ClimberDefaultCommand(m_climber));
-
+    m_Intake.setDefaultCommand(new IntakeManualTestCommand(m_Intake, ()-> driverController.getRightBumper(),()-> driverController.getLeftBumper(),()->driverController.getPOV(),STOW_ROT,INTAKE_DOWN_ROT));
     m_Launcher.setDefaultCommand(new TeleopLauncherControl(m_Launcher, driverController::getRightTriggerAxis));
     //m_Launcher.setDefaultCommand(new TeleopLauncherControl( m_Launcher,() -> driverController.getRightTriggerAxis()));
 
@@ -81,11 +85,11 @@ public class RobotContainer {
   public void configureBindings(){
 
     //intakeTrigger.toggleOnTrue(new IntakeCommand(m_Intake));
-    climberTrigger.toggleOnTrue(new ClimberCommand(m_climber));
-    zeroClimberTrigger.onTrue(new InstantCommand(()-> m_climber.zeroPosition()).alongWith(new PrintCommand("Zeroed Climber")));
-    moveClimberUpTrigger.whileTrue(new InstantCommand(()-> m_climber.setClimberDC(1.0)));
-    moveClimberDownTrigger.whileTrue(new InstantCommand(()-> m_climber.setClimberDC(-1.0)));
-    stopClimber.whileTrue(new InstantCommand(()-> m_climber.stop()));
+    //climberTrigger.toggleOnTrue(new ClimberCommand(m_climber));
+    //zeroClimberTrigger.onTrue(new InstantCommand(()-> m_climber.zeroPosition()).alongWith(new PrintCommand("Zeroed Climber")));
+    //moveClimberUpTrigger.whileTrue(new InstantCommand(()-> m_climber.setClimberDC(1.0)));
+    //moveClimberDownTrigger.whileTrue(new InstantCommand(()-> m_climber.setClimberDC(-1.0)));
+    //stopClimber.whileTrue(new InstantCommand(()-> m_climber.stop()));
 
 
   }

@@ -62,12 +62,13 @@ public class IntakeSubsystem extends SubsystemBase {
         Constants.IntakeConstants.kI_PIVOT,
         Constants.IntakeConstants.kD_PIVOT);
 
+        /*System.out.println(Constants.IntakeConstants.kS_PIVOT);
         pivotConfig.closedLoop.feedForward.sva(
             Constants.IntakeConstants.kS_PIVOT, 
             Constants.IntakeConstants.kV_PIVOT,
             Constants.IntakeConstants.kA_PIVOT,
             ClosedLoopSlot.kSlot0);
-
+ */
             pivotConfig.closedLoop.outputRange(
                 Constants.IntakeConstants.kMinOutput,
             Constants.IntakeConstants.kMaxOutput);
@@ -80,8 +81,8 @@ public class IntakeSubsystem extends SubsystemBase {
             pivotFollower.configure(pivotFollowerConfig,ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);     
     }
 
-    public void runRoller() {
-        roller.set(0.75);
+    public void runRoller(double dc) {
+        roller.set(dc);
     }
 
     public void stopRoller() {

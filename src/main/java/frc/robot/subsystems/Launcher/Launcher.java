@@ -74,7 +74,7 @@ public class Launcher extends SubsystemBase {
     follower.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     indexerConfig
-        .idleMode(IdleMode.kBrake)
+        .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(LauncherConstants.kIndexerCurrentLimit)
         .inverted(LauncherConstants.kIndexerInverted);
     indexer.configure(indexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

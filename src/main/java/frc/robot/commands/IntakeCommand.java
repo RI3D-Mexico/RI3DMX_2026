@@ -23,7 +23,7 @@ public class IntakeCommand extends Command {
     public void execute() {
         position = 0.5;
         m_intake.setPivotPosition(position);
-        m_intake.runRoller();
+        m_intake.runRoller(-0.75);
     }
     @Override
     public void  end(boolean interrupted){
