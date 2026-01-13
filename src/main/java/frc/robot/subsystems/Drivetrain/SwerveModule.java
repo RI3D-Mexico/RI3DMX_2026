@@ -21,6 +21,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.config.SwerveModuleConstants;
 import frc.lib.math.ModuleOptimizer;
@@ -188,13 +189,17 @@ public class SwerveModule extends SubsystemBase {
 
     public double getDrivePosition(){
 
-        return driveMotor.getEncoder().getPosition();
+        return driveMotorEncoder.getPosition();
 
     }
 
 
     public Rotation2d getSteerAngle() {
 
+        if (RobotBase.isSimulation()) {
+            return targetState.angle;
+        }
+        // ... existing logic for real robot ...
         double angle = steerMotorEncoder.getPosition();
         return Rotation2d.fromDegrees(angle);
 
@@ -210,20 +215,76 @@ public class SwerveModule extends SubsystemBase {
 
     public SwerveModulePosition getPosition() {
 
-        return new SwerveModulePosition(driveMotor.getEncoder().getPosition(), getSteerAngle());
+        return new SwerveModulePosition(driveMotorEncoder.getPosition(), getSteerAngle());
 
     }
 
     public SwerveModuleState getState() {
 
-        return new SwerveModuleState(driveMotor.getEncoder().getVelocity(), getSteerAngle());
+        double velocity;
+        
+        if (RobotBase.isSimulation()) {
+            // IN SIMULATION:
+            // The encoder won't report velocity automatically unless we do complex sim setup.
+            // So, we just return the speed we *wanted* the module to have.
+            velocity = targetState.speedMetersPerSecond;
+        } else {
+            // REAL ROBOT:
+            // Read the actual velocity from the Spark Max
+            velocity = driveMotorEncoder.getVelocity();
+        }
+
+        return new SwerveModuleState(velocity, getSteerAngle());
 
     }
 
     public SwerveModuleState getStateEncoder() {
 
-        return new SwerveModuleState(driveMotor.getEncoder().getVelocity(), getCANCoderAngle());
+        double velocity;
+        
+        if (RobotBase.isSimulation()) {
+            // IN SIMULATION:
+            // The encoder won't report velocity automatically unless we do complex sim setup.
+            // So, we just return the speed we *wanted* the module to have.
+            velocity = targetState.speedMetersPerSecond;
+        } else {
+            // REAL ROBOT:
+            // Read the actual velocity from the Spark Max
+            velocity = driveMotorEncoder.getVelocity();
+        }
 
+        return new SwerveModuleState(velocity, getSteerAngle());
+
+    }
+
+    /**
+     * Updates the simulated state of the module.
+     * @param dtSeconds The time elapsed since the last loop (usually 0.02s)
+     */
+    public void simulationPeriodic(double dtSeconds) {
+        // --- 1. Simulate Drive Motor (NEO) ---
+        // Calculate the distance the wheel would have traveled in this timestep
+        // Distance = Velocity * Time
+        double driveDeltaMeters = targetState.speedMetersPerSecond * dtSeconds;
+        
+        // Get the current simulated position
+        double currentDrivePosition = driveMotorEncoder.getPosition();
+        
+        // Update the SparkMax internal sim state
+        // NOTE: setPosition acts on the "converted" value if you configured a conversion factor.
+        driveMotorEncoder.setPosition(currentDrivePosition + driveDeltaMeters);
+
+
+        // --- 2. Simulate Steer Motor (NEO) ---
+        // For simplicity in simulation, we assume the steer motor snaps instantly to the target angle.
+        // If your robot spins wildly in sim, you might need to divide by your conversion factor here
+        // e.g. setPosition(targetState.angle.getDegrees() / Constants.Swerve.angleConversionFactor);
+        steerMotorEncoder.setPosition(targetState.angle.getDegrees());
+
+        // --- 3. Simulate CANcoder (Phoenix 6) ---
+        // Phoenix 6 devices have a specific "SimState" object we must write to.
+        // CANcoders expect units in Rotations.
+        angleEncoder.getSimState().setRawPosition(targetState.angle.getRotations());
     }
 
     @Override
