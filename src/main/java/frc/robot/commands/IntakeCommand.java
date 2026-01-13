@@ -21,7 +21,7 @@ public class IntakeCommand extends Command {
         position = 0.0;
     }
 
-     @Override
+    @Override
     public void execute() {
         position = 0.5;
         m_intake.setPivotPosition(position);
