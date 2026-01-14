@@ -43,17 +43,17 @@ public class RobotContainer {
 
   //Trigger intakeTrigger = new Trigger(()-> driverController.getAButtonPressed());
   //Trigger climberTrigger = new Trigger(()-> driverController.getStartButtonPressed()).and(()-> driverController.getBackButtonPressed());
-  //Trigger zeroClimberTrigger = new Trigger(()-> driverController.getLeftBumperButtonPressed());
-  //Trigger moveClimberUpTrigger = new Trigger(()-> driverController.getPOV() == 0);
-  //Trigger moveClimberDownTrigger = new Trigger(()-> driverController.getPOV() == 180);
-  //Trigger stopClimber = new Trigger(()-> driverController.getPOV() < 0);
+  Trigger zeroClimberTrigger = new Trigger(()-> driverController.getStartButton());
+  Trigger moveClimberUpTrigger = new Trigger(()-> driverController.getPOV() == 0);
+  Trigger moveClimberDownTrigger = new Trigger(()-> driverController.getPOV() == 180);
+  Trigger stopClimber = new Trigger(()-> driverController.getPOV() < 0);
 
   public RobotContainer() {
 
     registerCommands();
 
-    double STOW_ROT = 0.0;
-    double INTAKE_DOWN_ROT = 1;
+    //double STOW_ROT = -2.0;
+    //double INTAKE_DOWN_ROT = -0.02;
 
     DriverStation.silenceJoystickConnectionWarning(true);
     // Build an auto chooser. This will use Commands.none() as the default option.
@@ -68,7 +68,7 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     //m_climber.setDefaultCommand(new ClimberDefaultCommand(m_climber));
-    m_Intake.setDefaultCommand(new IntakeManualTestCommand(m_Intake, ()-> driverController.getRightBumper(),()-> driverController.getLeftBumper(),()->driverController.getPOV(),STOW_ROT,INTAKE_DOWN_ROT));
+    m_Intake.setDefaultCommand(new IntakeManualTestCommand(m_Intake, ()-> driverController.getRightBumper(),()-> driverController.getLeftBumper()));
     m_Launcher.setDefaultCommand(new TeleopLauncherControl(m_Launcher, driverController::getRightTriggerAxis));
     //m_Launcher.setDefaultCommand(new TeleopLauncherControl( m_Launcher,() -> driverController.getRightTriggerAxis()));
 
@@ -86,10 +86,10 @@ public class RobotContainer {
 
     //intakeTrigger.toggleOnTrue(new IntakeCommand(m_Intake));
     //climberTrigger.toggleOnTrue(new ClimberCommand(m_climber));
-    //zeroClimberTrigger.onTrue(new InstantCommand(()-> m_climber.zeroPosition()).alongWith(new PrintCommand("Zeroed Climber")));
-    //moveClimberUpTrigger.whileTrue(new InstantCommand(()-> m_climber.setClimberDC(1.0)));
-    //moveClimberDownTrigger.whileTrue(new InstantCommand(()-> m_climber.setClimberDC(-1.0)));
-    //stopClimber.whileTrue(new InstantCommand(()-> m_climber.stop()));
+    zeroClimberTrigger.onTrue(new InstantCommand(()-> m_climber.zeroPosition()).alongWith(new PrintCommand("Zeroed Climber")));
+    moveClimberUpTrigger.whileTrue(new InstantCommand(()-> m_climber.setClimberDC(1.0)));
+    moveClimberDownTrigger.whileTrue(new InstantCommand(()-> m_climber.setClimberDC(-1.0)));
+    stopClimber.whileTrue(new InstantCommand(()-> m_climber.stop()));
 
 
   }

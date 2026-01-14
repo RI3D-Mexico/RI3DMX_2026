@@ -41,13 +41,13 @@ public final class Constants {
     public static final boolean kRollerInverted = false;
     public static final boolean kPivotLeaderInverted = false;
     public static final boolean kPivotFollowerInverted = false;
-    public static final IdleMode kIdleMode = IdleMode.kBrake;
+    public static final IdleMode kIdleMode = IdleMode.kCoast;
     public static final int kCurrentLimit = 40;
-    public static final double kOpenLoopRampRate = 0.5;
+    public static final double kOpenLoopRampRate = 0.2;
     public static final double kClosedLoopRampRate = 0.0;
 
     //pid
-    public static final double kP_PIVOT = 1, kI_PIVOT = 0.0, kD_PIVOT = 0.0;
+    public static final double kP_PIVOT = 1, kI_PIVOT = 0.0, kD_PIVOT = 0.05;
     public static final double kS_PIVOT = 1, kV_PIVOT = 0.0, kA_PIVOT = 0.01;
     public static final double kMinOutput = -1.0, kMaxOutput = 1.0;
 
@@ -55,11 +55,11 @@ public final class Constants {
   
     public static final double INTAKE_VOLTAGE_COMP = 12.0;
 
-    public static final int PIVOT_CURRENT_LIMIT = 40;
+    public static final int PIVOT_CURRENT_LIMIT = 30;
 
 
     //velocity
-    public static final double INTAKE_RPM = 800;
+    public static final double INTAKE_RPM = 400;
   
     public static final double kP = 0.00025;
     public static final double kI = 0;
@@ -226,7 +226,7 @@ public final class Constants {
 
       public static final IdleMode K_IDLE_MODE= IdleMode.kCoast;
       
-      public static final double kIdleShooterRPM = 2500.0;
+      public static final double kIdleShooterRPM = 2800.0;
       public static final double kShootTriggerDeadband = 0.10;
       
       public static final double kIndexerFeedPercent = 0.75;
@@ -255,7 +255,7 @@ public final class Constants {
       public static final double kA_S1 = 0.02;
 
       public static final double kRpmTolerance = 75.0;
-      public static final double kDefaultShooterRPM = 2850.0;
+      public static final double kDefaultShooterRPM = 3650.0;
 
       public static final double kOpenLoopRampRate = 0.2;
       public static final double kClosedLoopRampRate = 0.0; 

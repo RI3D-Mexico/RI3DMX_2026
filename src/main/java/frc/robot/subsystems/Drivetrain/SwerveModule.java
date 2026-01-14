@@ -207,7 +207,6 @@ public class SwerveModule extends SubsystemBase {
 
     public Rotation2d getCANCoderAngle() {
 
-
         double angle = ((angleEncoder.getAbsolutePosition().getValueAsDouble()) * 360.0) - encoderOffset.getDegrees();
         return Rotation2d.fromDegrees(angle);
 

@@ -10,13 +10,16 @@ public class IntakeManualTestCommand extends Command {
     private final IntakeSubsystem m_intake;
     private final BooleanSupplier rollerButtonIn;
     private final BooleanSupplier rollerButtonOut;
+
+    /* 
     private final IntSupplier pOVSupplier;
 
     private final double stowRot;
     private final double intakeDownRot;
 
-    private int lastPov = 1;
+    private int lastPov = 1;*/
 
+    /* 
     public IntakeManualTestCommand( IntakeSubsystem m_intake,BooleanSupplier rollerButtonIn,BooleanSupplier rollerButtonOut, IntSupplier pOVSupplier,double stowRot,double intakeDownRot){
         this.m_intake = m_intake;
         this.rollerButtonIn = rollerButtonIn;
@@ -26,11 +29,19 @@ public class IntakeManualTestCommand extends Command {
         this.intakeDownRot = intakeDownRot;
 
         addRequirements(m_intake);
+    }*/
+
+    public IntakeManualTestCommand( IntakeSubsystem m_intake,BooleanSupplier rollerButtonIn,BooleanSupplier rollerButtonOut){
+        this.m_intake = m_intake;
+        this.rollerButtonIn = rollerButtonIn;
+         this.rollerButtonOut = rollerButtonOut;
+
+        addRequirements(m_intake);
     }
+
 
     @Override
     public void initialize() {
-        lastPov = -1;
         m_intake.stopRoller();
     }
 
@@ -44,13 +55,14 @@ public class IntakeManualTestCommand extends Command {
             m_intake.stopRoller();
         }
 
+        /* 
         int pov = pOVSupplier.getAsInt();
         if(pov != lastPov){
             m_intake.setPivotPosition(intakeDownRot);
         }else if(pov== 180){
             m_intake.setPivotPosition(stowRot);
         }
-        lastPov =  pov;
+        lastPov =  pov;*/
     }
 
     @Override
