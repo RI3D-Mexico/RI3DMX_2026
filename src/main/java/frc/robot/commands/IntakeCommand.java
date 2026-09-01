@@ -22,13 +22,13 @@ public class IntakeCommand extends Command {
     @Override
     public void execute() {
         position = 0.5;
-        m_intake.setPivotPosition(position);
+        m_intake.setPosition(position);
         m_intake.runRoller(-0.75);
     }
     @Override
     public void  end(boolean interrupted){
         m_intake.stopRoller();
-        m_intake.setPivotPosition(0.0);
+        m_intake.setPosition(0.0);
     }
 
     @Override

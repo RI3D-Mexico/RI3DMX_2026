@@ -32,8 +32,9 @@ public final class Constants {
 
   }
 
+  // Will have to be edited to suit your robot but here's some base values!
   public static class IntakeConstants {
-    public static final int ROLLER_MOTOR_ID =60;
+     public static final int ROLLER_MOTOR_ID =60;
     public static final int PIVOT_LEADER_ID = 54;
     public static final int PIVOT_FOLLOWER_ID = 16;
 
@@ -64,7 +65,14 @@ public final class Constants {
     public static final double kP = 0.00025;
     public static final double kI = 0;
     public static final double kD = 0;
-  }
+
+    // Constants that were added. Edit for your robot as needed!
+    public static final boolean encoderInvert = false;
+    public static final double encoderOffset = 0; 
+    public static final double rollerSpeed = 1;
+    public static final double downIntakePosition = 0;
+    public static final double upIntakePosition = 90;
+}
 
 
   public static final class Swerve {

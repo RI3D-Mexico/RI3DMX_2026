@@ -1,7 +1,5 @@
 package frc.robot.subsystems.Intake;
-
 import frc.robot.Constants;
-
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -9,107 +7,146 @@ import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.PersistMode;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-
-public class IntakeSubsystem extends SubsystemBase {
-    //Motor controllers for the roller and pivot mechanisms
-    private SparkMax roller;
-    private SparkMax pivotLeader;
-    private SparkMax pivotFollower;
-
-    private final RelativeEncoder pivotEncoder;
+import com.revrobotics.spark.FeedbackSensor;
+public class IntakeSubsystem extends SubsystemBase{
+    private final SparkMax roller;
+    private final SparkMax pivotLeader;
+    private final SparkMax pivotFollower;
+    private final SparkAbsoluteEncoder pivotEncoder;
     private final SparkClosedLoopController pivotController;
 
-
     public IntakeSubsystem() {
-        roller = new SparkMax(Constants.IntakeConstants.ROLLER_MOTOR_ID, MotorType.kBrushless);
-        pivotLeader = new SparkMax(Constants.IntakeConstants.PIVOT_LEADER_ID, MotorType.kBrushless);
-        pivotFollower = new SparkMax(Constants.IntakeConstants.PIVOT_FOLLOWER_ID, MotorType.kBrushless);
+        roller = new SparkMax(Constants.IntakeConstants.ROLLER_MOTOR_ID,MotorType.kBrushless);
+        pivotLeader = new SparkMax(Constants.IntakeConstants.PIVOT_LEADER_ID,MotorType.kBrushless);
+        pivotFollower = new SparkMax(Constants.IntakeConstants.PIVOT_FOLLOWER_ID,MotorType.kBrushless);
 
-        pivotEncoder = pivotLeader.getEncoder();
+        pivotEncoder = pivotLeader.getAbsoluteEncoder();
         pivotController = pivotLeader.getClosedLoopController();
 
-        //base configuration
         SparkBaseConfig baseConfig = new SparkMaxConfig()
             .idleMode(Constants.IntakeConstants.kIdleMode)
             .smartCurrentLimit(Constants.IntakeConstants.kCurrentLimit)
             .openLoopRampRate(Constants.IntakeConstants.kOpenLoopRampRate)
             .closedLoopRampRate(Constants.IntakeConstants.kClosedLoopRampRate);
 
-        //configure motor roller
         SparkMaxConfig rollerConfig = new SparkMaxConfig();
         rollerConfig
-        .apply(baseConfig)
-        .inverted(Constants.IntakeConstants.kRollerInverted);
-        
-        roller
-        .configure(rollerConfig,ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+            .apply(baseConfig)
+            .inverted(Constants.IntakeConstants.kRollerInverted);
 
-        //Configuration for pivot leader motor with PIDF
+        roller.configure(
+            rollerConfig,
+            ResetMode.kResetSafeParameters,
+            PersistMode.kPersistParameters
+        );
+
         SparkMaxConfig pivotConfig = new SparkMaxConfig();
         pivotConfig
-        .apply(baseConfig)
-        .inverted(Constants.IntakeConstants.kPivotLeaderInverted);
+            .apply(baseConfig)
+            .inverted(Constants.IntakeConstants.kPivotLeaderInverted);
 
-        pivotConfig.closedLoop.pid(
-            Constants.IntakeConstants.kP_PIVOT,
-        Constants.IntakeConstants.kI_PIVOT,
-        Constants.IntakeConstants.kD_PIVOT);
+        pivotConfig.absoluteEncoder
+            .positionConversionFactor(360)
+            .velocityConversionFactor(360)
+            .inverted(Constants.IntakeConstants.encoderInvert) 
+            .zeroOffset(Constants.IntakeConstants.encoderOffset);
 
-        /*System.out.println(Constants.IntakeConstants.kS_PIVOT);
+        pivotConfig.closedLoop
+            .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+            .pid(
+                Constants.IntakeConstants.kP_PIVOT,
+                Constants.IntakeConstants.kI_PIVOT,
+                Constants.IntakeConstants.kD_PIVOT
+            )
+            .outputRange(
+                Constants.IntakeConstants.kMinOutput,
+                Constants.IntakeConstants.kMaxOutput
+            );
         pivotConfig.closedLoop.feedForward.sva(
-            Constants.IntakeConstants.kS_PIVOT, 
+            Constants.IntakeConstants.kS_PIVOT,
             Constants.IntakeConstants.kV_PIVOT,
             Constants.IntakeConstants.kA_PIVOT,
-            ClosedLoopSlot.kSlot0);
- */
-            pivotConfig.closedLoop.outputRange(
-                Constants.IntakeConstants.kMinOutput,
-            Constants.IntakeConstants.kMaxOutput);
+            ClosedLoopSlot.kSlot0
+        );
 
-            pivotLeader.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        pivotLeader.configure(
+            pivotConfig,
+            ResetMode.kResetSafeParameters,
+            PersistMode.kPersistParameters
+        );
 
-            //make the second motor become a follower
-            SparkBaseConfig pivotFollowerConfig = new SparkMaxConfig().apply(baseConfig).follow(pivotLeader)
-            .inverted(Constants.IntakeConstants.kPivotFollowerInverted);
-            pivotFollower.configure(pivotFollowerConfig,ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);     
+        SparkBaseConfig pivotFollowerConfig = new SparkMaxConfig()
+                .apply(baseConfig)
+                .follow(pivotLeader)
+                .inverted(Constants.IntakeConstants.kPivotFollowerInverted);
+        pivotFollower.configure(
+            pivotFollowerConfig,
+            ResetMode.kResetSafeParameters,
+            PersistMode.kPersistParameters
+        );
     }
 
-    public void runRoller(double dc) {
-        roller.set(dc);
+    public void runRoller(double speed){
+        roller.set(speed);
     }
-
-    public void stopRoller() {
-        roller.set(0);
+    public void stopRoller(){
+        roller.stopMotor();
     }
-
-    public void setPivotPosition(double angleRotations) {
-        pivotController.setSetpoint(angleRotations, ControlType.kPosition, ClosedLoopSlot.kSlot0);
+    public void setPosition(double position){
+        pivotController.setSetpoint(
+            position,
+            ControlType.kPosition,
+            ClosedLoopSlot.kSlot0
+        );
     }
-
-    public void stopPivot() {
+    public void stopPivot(){
         pivotLeader.stopMotor();
     }
-    
-    public double getPivotPosition() {
+    public double getPivotPosition(){
         return pivotEncoder.getPosition();
     }
 
+    public Command intakeRoller(){
+        return run(() -> runRoller(Constants.IntakeConstants.rollerSpeed))
+        .finallyDo(interrupted -> stopRoller())
+        .withName("Run Intake Roller.");
+    }
+    public Command outtakeRoller(){
+        return run(() -> runRoller(-Constants.IntakeConstants.rollerSpeed))
+        .finallyDo(interrupted -> stopRoller())
+        .withName("Outtake Roller.");
+    }
+    public Command deployIntake(){
+        return runOnce(() ->setPosition(Constants.IntakeConstants.downIntakePosition)
+        ).withName("Deploy Intake");
+    }
+    public Command retractIntake(){
+        return runOnce(() ->setPosition( Constants.IntakeConstants.upIntakePosition))
+        .withName("Retract Intake");
+    }
+    public Command movePivotTo(double position){
+        return runOnce(() ->setPosition(position))
+        .withName("Move Intake Position");
+    }
+    public Command manualPivot(double speed){
+        return run(() -> pivotLeader.set(speed)
+        ).finallyDo(interrupted -> stopPivot())
+        .withName("Manual Pivot");
+    }
+    public Command stopIntake() {
+        return runOnce(()->{
+            stopRoller();
+            stopPivot();
+        }).withName("Stop all");
+    }
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Pivot/Position",getPivotPosition());
+        SmartDashboard.putNumber("Pivot - Absolute Position",getPivotPosition());
     }
 }
-/*
- * TODO: 
- * Add absolute encoder
- * Configure absolute encoder
- * nice to have: feedforward
- * create intake comands
- */
